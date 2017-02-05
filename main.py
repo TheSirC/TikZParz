@@ -28,11 +28,11 @@ with open("C:/Users/Claude-Alban/Documents/Personnel/Projets/ProjectTikz/Nouvell
             os.makedirs(chemin + nom + '/' + titre,exist_ok=True)
             img = h3.find_next("img")
             src, title = img["src"], img["title"]
-            # join base url and image url
+            # Joins la base et l'adresse associé à l'image
             img_url = urljoin(base_url, src)
-            # open file using title as file name
+            # Ouvre le fichier avec son titre comme nom
             with open(chemin + nom + '/' + titre + '/' + title, "w") as f:
-                # requests the img url and write content
+                # Fais la requête de l'image sous forme de texte et l'écris dans le fichier
                 f.write(requests.get(img_url).text)
             # Récupération du code TikZ située dans la balise soeur située juste après le header précédent
             code = img.find_next("p").text

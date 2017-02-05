@@ -44,19 +44,21 @@ with open("newfile.txt","r") as cont:
         # Sélection des headers contenant les titres des documents
         for h3 in table.select("h3"):
             # Création des répertoires avec les noms des figures
-            titre = str(h3.text).encode('utf8')
+            titre = str(slugify(h3.text)).encode('utf8')
             os.makedirs(chemin + nom.decode('utf8') + '/' + titre.decode('utf8'),exist_ok=True)
             img = h3.find_next("img")
             src, title = img["src"], img["title"]
+            # Encodage en utf-8 du titre de l'image
+            title = str(slugify(title)).encode('utf8')
             # Joins la base et l'adresse associé à l'image
             img_url = urljoin(base_url, src)
             # Ouvre le fichier avec son titre comme nom
-            with open(chemin + nom.decode('utf8') + '/' + titre.decode('utf8') + '/' + title, "w") as f:
+            with open(chemin + nom.decode('utf8') + '/' + titre.decode('utf8') + '/' + title.decode('utf8'), "w") as f:
                 # Fais la requête de l'image sous forme de texte et l'écris dans le fichier
-                f.write(requests.get(img_url).text)
+                f.write(requests.get(img_url).content.decode('utf8'))
             # Récupération du code TikZ située dans la balise soeur située juste après le header précédent
             code = img.find_next("p").text
             # Définition puis écriture du préambule et du code nécessaire à la production de l'image précédemment enregistrée
             preambule = r"%PREAMBULE \n\usepackage{pgfplots} \n\usepackage{tikz} \n\usepackage[european resistor, european voltage, european current]{circuitikz} \n\usetikzlibrary{arrows,shapes,positioning} \n\usetikzlibrary{decorations.markings,decorations.pathmorphing, decorations.pathreplacing} \n\usetikzlibrary{calc,patterns,shapes.geometric} \n%FIN PREAMBULE"
-            with open(chemin + nom.decode('utf8') + '/' + titre.decode('utf8') + '/' + titre + u".tex",'w') as result:
+            with open(chemin + nom.decode('utf8') + '/' + titre.decode('utf8') + '/' + titre.decode('utf8') + u".tex",'w') as result:
                 result.write(preambule + code)

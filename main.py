@@ -6,12 +6,17 @@ import urllib.request
 from os import path
 import requests
 
+# Changement de dossier de travail
 os.chdir("C:/Users/Claude-Alban/Documents/Personnel/Projets/TikZParz")
-cont = requests.get("http://www.physagreg.fr/schemas-figures-physique-svg-tikz.php").text
+# Récupération du contenu de la page
+page = requests.get("http://www.physagreg.fr/schemas-figures-physique-svg-tikz.php").text
+
+# Affectation du chemin du résultat
 chemin = u"./Résulat/"
+# Affectation de la base de l'url de base
 base_url = "http://www.physagreg.fr/"
 # Sélection du HTML et remplissage de son contenu dans la variable éponyme
-with open(cont,"r") as cont:
+with open(page,"r") as cont:
     soup = BeautifulSoup(cont,'html.parser')
     # Sélection des hearders, restriction des résultats aux six premiers et création des dossiers
     h5s = soup.find_all("h5",limit=6)

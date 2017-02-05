@@ -1,0 +1,21 @@
+article h1 {
+  font-family: Geneva, "trebuchet MS",Georgia,Arial,"Arial Black","Times New Roman",Times,serif;
+  margin-top: 0px;
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 1px gray;
+font-size:2.0em;
+  color: #D48CFF;
+  text-align: center;
+  font-style: oblique;
+}
+#navdroit .block h3 /*titre block du menu à gauche */
+{
+background: -moz-linear-gradient(#F4E0FF,#D48CFF);
+background: -webkit-linear-gradient(#F4E0FF,#D48CFF);
+background: linear-gradient(#F4E0FF,#D48CFF);
+}
+#navdroit .block  li a:hover
+{
+color:blue;
+background-color:#F4E0FF;
+}

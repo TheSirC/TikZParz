@@ -5,10 +5,21 @@ from urllib.parse import urljoin
 import urllib.request
 from os import path
 import requests
+import unicodedata
+import re
+
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = re.sub(b'[^\w\s-]', b'', value).strip().lower()
+    value = re.sub(b'[-\s]+', b'-', value)
 
 
 # Changement de dossier de travail
-os.chdir("F:/Documents/Scolaire/ProjetCloclo/TikZParz")
+os.chdir("C:/Users/Claude-Alban/Documents/Personnel/Projets/TikZParz")
 # Récupération du contenu de la page
 cont = requests.get("http://www.physagreg.fr/schemas-figures-physique-svg-tikz.php").text
 # Affectation du chemin du résultat
@@ -26,7 +37,7 @@ with open("newfile.txt","r") as cont:
     h5s = soup.find_all("h5",limit=6)
     for h5 in h5s:
         # Création des fichiers avec le nom des headers
-        nom = str(h5.contents[0].string).encode('utf8')
+        nom = str(slugify(h5.contents[0].string)).encode('utf8')
         os.makedirs(chemin + nom.decode('utf8'),exist_ok=True)
         # Sélection de la table soeur située juste après le header
         table = h5.find_next("table")
@@ -40,12 +51,12 @@ with open("newfile.txt","r") as cont:
             # Joins la base et l'adresse associé à l'image
             img_url = urljoin(base_url, src)
             # Ouvre le fichier avec son titre comme nom
-            with open(chemin + nom + '/' + titre + '/' + title, "w") as f:
+            with open(chemin + nom.decode('utf8') + '/' + titre.decode('utf8') + '/' + title, "w") as f:
                 # Fais la requête de l'image sous forme de texte et l'écris dans le fichier
                 f.write(requests.get(img_url).text)
             # Récupération du code TikZ située dans la balise soeur située juste après le header précédent
             code = img.find_next("p").text
             # Définition puis écriture du préambule et du code nécessaire à la production de l'image précédemment enregistrée
             preambule = r"%PREAMBULE \n\usepackage{pgfplots} \n\usepackage{tikz} \n\usepackage[european resistor, european voltage, european current]{circuitikz} \n\usetikzlibrary{arrows,shapes,positioning} \n\usetikzlibrary{decorations.markings,decorations.pathmorphing, decorations.pathreplacing} \n\usetikzlibrary{calc,patterns,shapes.geometric} \n%FIN PREAMBULE"
-            with open(chemin + nom + '/' + titre + '/' + titre + ".tex",'w') as result:
+            with open(chemin + nom.decode('utf8') + '/' + titre.decode('utf8') + '/' + titre + u".tex",'w') as result:
                 result.write(preambule + code)

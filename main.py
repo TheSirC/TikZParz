@@ -13,9 +13,10 @@ def slugify(value):
     Normalizes string, converts to lowercase, removes non-alpha characters,
     and converts spaces to hyphens.
     """
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = unicodedata.normalize('NFKD', value).encode('utf8')
     value = re.sub(b'[^\w\s-]', b'', value).strip().lower()
     value = re.sub(b'[-\s]+', b'-', value)
+    return value
 
 
 # Changement de dossier de travail
@@ -37,28 +38,36 @@ with open("newfile.txt","r") as cont:
     h5s = soup.find_all("h5",limit=6)
     for h5 in h5s:
         # Création des fichiers avec le nom des headers
-        nom = str(slugify(h5.contents[0].string)).encode('utf8')
-        os.makedirs(chemin + nom.decode('utf8'),exist_ok=True)
+        nom = slugify(str(h5.contents[0].string)).decode('utf8')
+        os.makedirs(chemin + nom,exist_ok=True)
         # Sélection de la table soeur située juste après le header
         table = h5.find_next("table")
         # Sélection des headers contenant les titres des documents
         for h3 in table.select("h3"):
             # Création des répertoires avec les noms des figures
-            titre = str(slugify(h3.text)).encode('utf8')
-            os.makedirs(chemin + nom.decode('utf8') + '/' + titre.decode('utf8'),exist_ok=True)
+            titre = slugify(str(h3.text)).decode('utf8')
+            os.makedirs(chemin + nom + '/' + titre,exist_ok=True)
             img = h3.find_next("img")
             src, title = img["src"], img["title"]
             # Encodage en utf-8 du titre de l'image
-            title = str(slugify(title)).encode('utf8')
+            title = str(title).encode('utf8')
             # Joins la base et l'adresse associé à l'image
             img_url = urljoin(base_url, src)
             # Ouvre le fichier avec son titre comme nom
-            with open(chemin + nom.decode('utf8') + '/' + titre.decode('utf8') + '/' + title.decode('utf8'), "w") as f:
+            with open(chemin + nom + '/' + titre + '/' + title.decode('utf8'), "w") as f:
                 # Fais la requête de l'image sous forme de texte et l'écris dans le fichier
                 f.write(requests.get(img_url).content.decode('utf8'))
             # Récupération du code TikZ située dans la balise soeur située juste après le header précédent
             code = img.find_next("p").text
             # Définition puis écriture du préambule et du code nécessaire à la production de l'image précédemment enregistrée
-            preambule = r"%PREAMBULE \n\usepackage{pgfplots} \n\usepackage{tikz} \n\usepackage[european resistor, european voltage, european current]{circuitikz} \n\usetikzlibrary{arrows,shapes,positioning} \n\usetikzlibrary{decorations.markings,decorations.pathmorphing, decorations.pathreplacing} \n\usetikzlibrary{calc,patterns,shapes.geometric} \n%FIN PREAMBULE"
-            with open(chemin + nom.decode('utf8') + '/' + titre.decode('utf8') + '/' + titre.decode('utf8') + u".tex",'w') as result:
+            preambule = r"""% PREAMBULE
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usepackage[european resistor, european voltage, european current]{circuitikz}
+\usetikzlibrary{arrows,shapes,positioning}
+\usetikzlibrary{decorations.markings,decorations.pathmorphing, decorations.pathreplacing}
+\usetikzlibrary{calc,patterns,shapes.geometric}
+% FIN PREAMBULE
+"""
+            with open(chemin + nom + '/' + titre + '/' + titre + u".tex",'w') as result:
                 result.write(preambule + code)

@@ -6,12 +6,12 @@ import urllib.request
 from os import path
 import requests
 
-os.chdir("C:/Users/Claude-Alban/Documents/Personnel/Projets/ProjectTikz")
-# cont = requests.get("http://www.physagreg.fr/schemas-figures-physique-svg-tikz.php").text
-chemin = u"../Résulat/"
+os.chdir("C:/Users/Claude-Alban/Documents/Personnel/Projets/TikZParz")
+cont = requests.get("http://www.physagreg.fr/schemas-figures-physique-svg-tikz.php").text
+chemin = u"./Résulat/"
 base_url = "http://www.physagreg.fr/"
 # Sélection du HTML et remplissage de son contenu dans la variable éponyme
-with open("C:/Users/Claude-Alban/Documents/Personnel/Projets/ProjectTikz/Nouvelle tentative/Donnees/Physagreg.htm","r") as cont:
+with open(cont,"r") as cont:
     soup = BeautifulSoup(cont,'html.parser')
     # Sélection des hearders, restriction des résultats aux six premiers et création des dossiers
     h5s = soup.find_all("h5",limit=6)
@@ -37,6 +37,6 @@ with open("C:/Users/Claude-Alban/Documents/Personnel/Projets/ProjectTikz/Nouvell
             # Récupération du code TikZ située dans la balise soeur située juste après le header précédent
             code = img.find_next("p").text
             # Définition puis écriture du préambule et du code nécessaire à la production de l'image précédemment enregistrée
-            preambule = r"%PREAMBULE \n  \usepackage{pgfplots} \n  \usepackage{tikz} \n  \usepackage[european resistor, european voltage, european current]{circuitikz} \n  \usetikzlibrary{arrows,shapes,positioning} \n  \usetikzlibrary{decorations.markings,decorations.pathmorphing, decorations.pathreplacing} \n  \usetikzlibrary{calc,patterns,shapes.geometric} \n  %FIN PREAMBULE"
+            preambule = r"%PREAMBULE \n\usepackage{pgfplots} \n\usepackage{tikz} \n\usepackage[european resistor, european voltage, european current]{circuitikz} \n\usetikzlibrary{arrows,shapes,positioning} \n\usetikzlibrary{decorations.markings,decorations.pathmorphing, decorations.pathreplacing} \n\usetikzlibrary{calc,patterns,shapes.geometric} \n%FIN PREAMBULE"
             with open(chemin + nom + '/' + titre + '/' + titre + ".tex",'w') as result:
                 result.write(preambule + code)

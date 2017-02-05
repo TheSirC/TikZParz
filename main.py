@@ -10,7 +10,6 @@ import requests
 os.chdir("C:/Users/Claude-Alban/Documents/Personnel/Projets/TikZParz")
 # Récupération du contenu de la page
 page = requests.get("http://www.physagreg.fr/schemas-figures-physique-svg-tikz.php").text
-
 # Affectation du chemin du résultat
 chemin = u"./Résulat/"
 # Affectation de la base de l'url de base
@@ -22,15 +21,15 @@ with open(page,"r") as cont:
     h5s = soup.find_all("h5",limit=6)
     for h5 in h5s:
         # Création des fichiers avec le nom des headers
-        nom = str(h5.contents[0].string)
-        os.makedirs(chemin + nom,exist_ok=True)
+        nom = str(h5.contents[0].string).encode(utf8)
+        os.makedirs(chemin + nom.decode(utf8),exist_ok=True)
         # Sélection de la table soeur située juste après le header
         table = h5.find_next("table")
         # Sélection des headers contenant les titres des documents
         for h3 in table.select("h3"):
             # Création des répertoires avec les noms des figures
-            titre = str(h3.text)
-            os.makedirs(chemin + nom + '/' + titre,exist_ok=True)
+            titre = str(h3.text).encode(utf8)
+            os.makedirs(chemin + nom.decode(utf8) + '/' + titre.decode(utf8),exist_ok=True)
             img = h3.find_next("img")
             src, title = img["src"], img["title"]
             # Joins la base et l'adresse associé à l'image
